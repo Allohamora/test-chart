@@ -45,13 +45,15 @@ chart.addEventListener('mousemove', (e) => {
 });
 
 ctx.beginPath();
-ctx.moveTo(0, availableHeight);
-ctx.lineTo(0, availableHeight);
-values.forEach((value, i) => ctx.lineTo(...getCoords(value, i)));
 ctx.fillStyle = 'rgba(82, 246, 79, 0.2)';
 ctx.lineWidth = 5;
 ctx.strokeStyle = '#52F64F';
+ctx.moveTo(0, 0);
+// 50 0, 50 100, 100 100
+ctx.bezierCurveTo(50, 0, 50, 100, 100, 100);
+ctx.bezierCurveTo(150, 100, 150, 200, 200, 200);
+ctx.bezierCurveTo(250, 200, 250, 100, 300, 100);
 ctx.stroke();
-ctx.lineTo(getCoords(values[values.length -1], values.length - 1)[0], height);
-ctx.lineTo(0, height);
-ctx.fill();
+// ctx.lineTo(getCoords(values[values.length -1], values.length - 1)[0], height);
+// ctx.lineTo(0, height);
+// ctx.fill();
