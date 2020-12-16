@@ -11,38 +11,51 @@ const setCorrectSize = () => {
 setCorrectSize();
 
 const values = [10000, 100, 20, 5000];
+
 const ctx = chart.getContext('2d');
 
 const { height, width } = chart;
 
-const max = Math.max(...values);
-const min = Math.min(...values);
+const maxValue = Math.max(...values);
+const minValue = Math.min(...values);
 
-const availableHeight = height - 10;
+const availableHeight = height;
 
 const heightPercent = availableHeight / 100;
 const widthPercent = width / 100;
 
-const slice = width / values.length;
+const step = width / values.length;
 
-const getCoords = (value, i) => {
-  const yPercent = value / max * 100;
-  const x = (i + 1) * slice;
+let steps = [{ x: 0, y: 10 }];
 
+const getBezierCurve = (value, i) => {
+  const previous = steps[i];
+
+  const yPercent = value / maxValue * 100;
+
+  const x = previous.x + step;
   const y = availableHeight - (heightPercent * yPercent);
 
-  return [x, y];
+  const cp1x = previous.x + step / 2;
+  const cp1y = previous.y;
+
+  const cp2x = cp1x;
+  const cp2y = y;
+
+  steps.push({ x, y });
+
+  return [cp1x, cp1y, cp2x, cp2y, x, y];
 };
 
-chart.addEventListener('mousemove', (e) => {
-  // const y = e.clientY - chart.offsetTop;
-  const x = e.clientX - chart.offsetLeft;
+// chart.addEventListener('mousemove', (e) => {
+//   // const y = e.clientY - chart.offsetTop;
+//   const x = e.clientX - chart.offsetLeft;
 
-  const index = Math.trunc(x / slice);
+//   const index = Math.trunc(x / step);
 
-  const value = values[index];
-  console.log(value);
-});
+//   const value = values[index];
+//   console.log(value);
+// });
 
 ctx.beginPath();
 ctx.fillStyle = 'rgba(82, 246, 79, 0.2)';
@@ -50,10 +63,6 @@ ctx.lineWidth = 5;
 ctx.strokeStyle = '#52F64F';
 ctx.moveTo(0, 0);
 // 50 0, 50 100, 100 100
-ctx.bezierCurveTo(50, 0, 50, 100, 100, 100);
-ctx.bezierCurveTo(150, 100, 150, 200, 200, 200);
-ctx.bezierCurveTo(250, 200, 250, 100, 300, 100);
+// 1/2, previous, 1/2, full, full, full
+values.forEach((value, i) => ctx.bezierCurveTo(...getBezierCurve(value, i)));
 ctx.stroke();
-// ctx.lineTo(getCoords(values[values.length -1], values.length - 1)[0], height);
-// ctx.lineTo(0, height);
-// ctx.fill();
